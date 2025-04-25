@@ -1,10 +1,16 @@
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
 import { getAllArticles } from '@/lib/mdx';
 import { notFound } from 'next/navigation';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
+
+type Params = {
+  params: {
+    slug: string;
+  };
+};
 
 // Dynamic route to render individual articles
 export async function generateStaticParams() {
@@ -14,11 +20,7 @@ export async function generateStaticParams() {
   }));
 }
 
-export default async function ArticlePage({ 
-  params 
-}: { 
-  params: { slug: string } 
-}) {
+export default async function ArticlePage({ params }: Params) {
   try {
     // Construct the path to the MDX file
     const articlesDirectory = path.join(process.cwd(), 'app/articles');
@@ -42,11 +44,7 @@ export default async function ArticlePage({
 }
 
 // Generate metadata dynamically
-export async function generateMetadata({ 
-  params 
-}: { 
-  params: { slug: string } 
-}): Promise<Metadata> {
+export async function generateMetadata({ params }: Params): Promise<Metadata> {
   try {
     const articlesDirectory = path.join(process.cwd(), 'app/articles');
     const fullPath = path.join(articlesDirectory, params.slug, 'page.mdx');
