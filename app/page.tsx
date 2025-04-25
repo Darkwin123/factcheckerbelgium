@@ -34,7 +34,7 @@ export default function Home() {
             <div className="md:flex">
               <div className="md:flex-shrink-0 md:w-1/2">
                 <Image 
-                  src="/images/featured-check.jpg" 
+                  src="/images/featured-check.svg" 
                   alt="Featured fact check" 
                   width={800} 
                   height={450}
@@ -47,7 +47,7 @@ export default function Home() {
                   <span className="ml-2 text-gray-500 text-sm">23 April 2025</span>
                 </div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                  "Belastinghervorming zal gemiddelde Vlaming 500 euro per maand kosten"
+                  &ldquo;Belastinghervorming zal gemiddelde Vlaming 500 euro per maand kosten&rdquo;
                 </h2>
                 <p className="text-gray-600 mb-4">
                   Deze bewering, gedaan door parlementslid Janssen tijdens een televisiedebat, klopt niet volgens onze analyse van de officiële cijfers.
@@ -67,7 +67,7 @@ export default function Home() {
             {/* Fact Check 1 */}
             <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
               <Image 
-                src="/images/chocolade.jpg" 
+                src="/images/chocolade.svg" 
                 alt="Chocolade" 
                 width={400} 
                 height={200}
@@ -78,7 +78,7 @@ export default function Home() {
                   <span className="bg-yellow-100 text-yellow-800 text-xs font-semibold px-2.5 py-0.5 rounded">GEDEELTELIJK WAAR</span>
                 </div>
                 <h3 className="text-lg font-bold text-gray-900 mb-2">
-                  "Chocolade is gezond voor je hart"
+                  &ldquo;Chocolade is gezond voor je hart&rdquo;
                 </h3>
                 <p className="text-gray-600 text-sm mb-4">
                   Pure chocolade in kleine hoeveelheden heeft voordelen, maar de meeste chocolade bevat te veel suiker.
@@ -92,7 +92,7 @@ export default function Home() {
             {/* Fact Check 2 */}
             <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
               <Image 
-                src="/images/begroting.jpg" 
+                src="/images/begroting.svg" 
                 alt="Begroting" 
                 width={400} 
                 height={200}
@@ -103,7 +103,7 @@ export default function Home() {
                   <span className="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded">WAAR</span>
                 </div>
                 <h3 className="text-lg font-bold text-gray-900 mb-2">
-                  "Vlaams begrotingstekort is historisch laag"
+                  &ldquo;Vlaams begrotingstekort is historisch laag&rdquo;
                 </h3>
                 <p className="text-gray-600 text-sm mb-4">
                   Officiële cijfers bevestigen dat het tekort inderdaad gedaald is naar het laagste niveau sinds 2008.
@@ -117,7 +117,7 @@ export default function Home() {
             {/* Fact Check 3 */}
             <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
               <Image 
-                src="/images/eu-quote.jpg" 
+                src="/images/eu-quote.svg" 
                 alt="EU Quote" 
                 width={400} 
                 height={200}
@@ -128,7 +128,7 @@ export default function Home() {
                   <span className="bg-red-100 text-red-800 text-xs font-semibold px-2.5 py-0.5 rounded">NIET WAAR</span>
                 </div>
                 <h3 className="text-lg font-bold text-gray-900 mb-2">
-                  "EU verplicht lidstaten om 500.000 migranten op te nemen"
+                  &ldquo;EU verplicht lidstaten om 500.000 migranten op te nemen&rdquo;
                 </h3>
                 <p className="text-gray-600 text-sm mb-4">
                   Dit citaat dat viraal ging op sociale media is een onjuiste interpretatie van het nieuwe EU-migratiepact.
