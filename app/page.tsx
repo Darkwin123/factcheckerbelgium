@@ -1,7 +1,20 @@
 import Image from 'next/image'
 import Link from 'next/link'
+import { getAllArticles } from '@/lib/mdx'
 
 export default function Home() {
+  const allArticles = getAllArticles();
+  const featuredArticle = allArticles[0]; // First article is featured
+  const recentArticles = allArticles.slice(1, 4); // Next 3 articles
+  
+  // Group articles by category
+  const categories = {
+    politiek: allArticles.filter(article => article.category === 'politiek'),
+    economie: allArticles.filter(article => article.category === 'economie'),
+    europa: allArticles.filter(article => article.category === 'europa'),
+    social: allArticles.filter(article => article.category === 'social'),
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -29,115 +42,70 @@ export default function Home() {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Hero Section - Featured Fact Check */}
-        <div className="mb-12">
-          <div className="bg-white rounded-lg shadow-md overflow-hidden">
-            <div className="md:flex">
-              <div className="md:flex-shrink-0 md:w-1/2">
-                <Image 
-                  src="/images/featured-check.svg" 
-                  alt="Featured fact check" 
-                  width={800} 
-                  height={450}
-                  className="h-full w-full object-cover"
-                />
-              </div>
-              <div className="p-8 md:w-1/2">
-                <div className="flex items-center mb-4">
-                  <span className="bg-red-100 text-red-800 text-xs font-semibold px-2.5 py-0.5 rounded">NIET WAAR</span>
-                  <span className="ml-2 text-gray-500 text-sm">23 April 2025</span>
+        {featuredArticle && (
+          <div className="mb-12">
+            <div className="bg-white rounded-lg shadow-md overflow-hidden">
+              <div className="md:flex">
+                <div className="md:flex-shrink-0 md:w-1/2">
+                  <Image 
+                    src={featuredArticle.imageUrl} 
+                    alt={featuredArticle.title} 
+                    width={800} 
+                    height={450}
+                    className="h-full w-full object-cover"
+                  />
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                  &ldquo;Belastinghervorming zal gemiddelde Vlaming 500 euro per maand kosten&rdquo;
-                </h2>
-                <p className="text-gray-600 mb-4">
-                  Deze bewering, gedaan door parlementslid Janssen tijdens een televisiedebat, klopt niet volgens onze analyse van de officiële cijfers.
-                </p>
-                <Link href="/articles/belastinghervorming" className="text-blue-800 font-medium hover:underline">
-                  Lees de volledige analyse →
-                </Link>
+                <div className="p-8 md:w-1/2">
+                  <div className="flex items-center mb-4">
+                    <RatingBadge rating={featuredArticle.rating} />
+                    <span className="ml-2 text-gray-500 text-sm">{featuredArticle.date}</span>
+                  </div>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                    &ldquo;{featuredArticle.title}&rdquo;
+                  </h2>
+                  <p className="text-gray-600 mb-4">
+                    {featuredArticle.excerpt}
+                  </p>
+                  <Link href={`/articles/${featuredArticle.slug}`} className="text-blue-800 font-medium hover:underline">
+                    Lees de volledige analyse →
+                  </Link>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Recent Fact Checks Grid */}
         <div className="mb-12">
           <h2 className="text-xl font-bold text-gray-900 mb-6">Recente Factchecks</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Fact Check 1 */}
-            <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-              <Image 
-                src="/images/chocolade.svg" 
-                alt="Chocolade" 
-                width={400} 
-                height={200}
-                className="w-full h-48 object-cover"
-              />
-              <div className="p-6">
-                <div className="flex items-center mb-2">
-                  <span className="bg-yellow-100 text-yellow-800 text-xs font-semibold px-2.5 py-0.5 rounded">GEDEELTELIJK WAAR</span>
+            {recentArticles.map((article) => (
+              <div key={article.slug} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                <Image 
+                  src={article.imageUrl} 
+                  alt={article.title} 
+                  width={400} 
+                  height={200}
+                  className="w-full h-48 object-cover"
+                />
+                <div className="p-6">
+                  <div className="flex items-center mb-2">
+                    <RatingBadge rating={article.rating} />
+                  </div>
+                  <h3 className="text-lg font-bold text-gray-900 mb-2">
+                    &ldquo;{article.title}&rdquo;
+                  </h3>
+                  <p className="text-gray-600 text-sm mb-4">
+                    {article.excerpt.length > 100 
+                      ? `${article.excerpt.substring(0, 100)}...` 
+                      : article.excerpt}
+                  </p>
+                  <Link href={`/articles/${article.slug}`} className="text-blue-800 text-sm font-medium hover:underline">
+                    Lees meer →
+                  </Link>
                 </div>
-                <h3 className="text-lg font-bold text-gray-900 mb-2">
-                  &ldquo;Chocolade is gezond voor je hart&rdquo;
-                </h3>
-                <p className="text-gray-600 text-sm mb-4">
-                  Pure chocolade in kleine hoeveelheden heeft voordelen, maar de meeste chocolade bevat te veel suiker.
-                </p>
-                <Link href="/articles/chocolade" className="text-blue-800 text-sm font-medium hover:underline">
-                  Lees meer →
-                </Link>
               </div>
-            </div>
-
-            {/* Fact Check 2 */}
-            <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-              <Image 
-                src="/images/begroting.svg" 
-                alt="Begroting" 
-                width={400} 
-                height={200}
-                className="w-full h-48 object-cover"
-              />
-              <div className="p-6">
-                <div className="flex items-center mb-2">
-                  <span className="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded">WAAR</span>
-                </div>
-                <h3 className="text-lg font-bold text-gray-900 mb-2">
-                  &ldquo;Vlaams begrotingstekort is historisch laag&rdquo;
-                </h3>
-                <p className="text-gray-600 text-sm mb-4">
-                  Officiële cijfers bevestigen dat het tekort inderdaad gedaald is naar het laagste niveau sinds 2008.
-                </p>
-                <Link href="/articles/begroting" className="text-blue-800 text-sm font-medium hover:underline">
-                  Lees meer →
-                </Link>
-              </div>
-            </div>
-
-            {/* Fact Check 3 */}
-            <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-              <Image 
-                src="/images/eu-quote.svg" 
-                alt="EU Quote" 
-                width={400} 
-                height={200}
-                className="w-full h-48 object-cover"
-              />
-              <div className="p-6">
-                <div className="flex items-center mb-2">
-                  <span className="bg-red-100 text-red-800 text-xs font-semibold px-2.5 py-0.5 rounded">NIET WAAR</span>
-                </div>
-                <h3 className="text-lg font-bold text-gray-900 mb-2">
-                  &ldquo;EU verplicht lidstaten om 500.000 migranten op te nemen&rdquo;
-                </h3>
-                <p className="text-gray-600 text-sm mb-4">
-                  Dit citaat dat viraal ging op sociale media is een onjuiste interpretatie van het nieuwe EU-migratiepact.
-                </p>
-                <Link href="/articles/eu-migratie" className="text-blue-800 text-sm font-medium hover:underline">
-                  Lees meer →
-                </Link>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
 
@@ -148,19 +116,27 @@ export default function Home() {
             <div className="grid grid-cols-2 gap-4">
               <Link href="/topics/politiek" className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow">
                 <h3 className="font-bold text-gray-900">Politiek</h3>
-                <p className="text-sm text-gray-600">Factchecks over uitspraken van politici</p>
+                <p className="text-sm text-gray-600">
+                  {categories.politiek.length} factchecks over uitspraken van politici
+                </p>
               </Link>
               <Link href="/topics/economie" className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow">
                 <h3 className="font-bold text-gray-900">Economie</h3>
-                <p className="text-sm text-gray-600">Beweringen over jobs, belastingen en financiën</p>
+                <p className="text-sm text-gray-600">
+                  {categories.economie.length} beweringen over jobs, belastingen en financiën
+                </p>
               </Link>
               <Link href="/topics/europa" className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow">
                 <h3 className="font-bold text-gray-900">Europa</h3>
-                <p className="text-sm text-gray-600">Claims over de Europese Unie</p>
+                <p className="text-sm text-gray-600">
+                  {categories.europa.length} claims over de Europese Unie
+                </p>
               </Link>
               <Link href="/topics/social" className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow">
                 <h3 className="font-bold text-gray-900">Sociale Media</h3>
-                <p className="text-sm text-gray-600">Virale berichten en desinformatie</p>
+                <p className="text-sm text-gray-600">
+                  {categories.social.length} virale berichten en desinformatie
+                </p>
               </Link>
             </div>
           </div>
@@ -238,4 +214,34 @@ export default function Home() {
       </footer>
     </div>
   );
+}
+
+// Component for displaying rating badges with the right colors
+function RatingBadge({ rating }: { rating: string }) {
+  switch (rating) {
+    case 'WAAR':
+      return (
+        <span className="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded">
+          WAAR
+        </span>
+      );
+    case 'GEDEELTELIJK WAAR':
+      return (
+        <span className="bg-yellow-100 text-yellow-800 text-xs font-semibold px-2.5 py-0.5 rounded">
+          GEDEELTELIJK WAAR
+        </span>
+      );
+    case 'NIET WAAR':
+      return (
+        <span className="bg-red-100 text-red-800 text-xs font-semibold px-2.5 py-0.5 rounded">
+          NIET WAAR
+        </span>
+      );
+    default:
+      return (
+        <span className="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">
+          MISLEIDEND
+        </span>
+      );
+  }
 }
