@@ -1,3 +1,4 @@
+import { Metadata } from 'next';
 import { getAllArticles } from '@/lib/mdx';
 import { notFound } from 'next/navigation';
 import { MDXRemote } from 'next-mdx-remote/rsc';
@@ -34,9 +35,7 @@ export default async function ArticlePage({
         <MDXRemote source={content} />
       </div>
     );
-  } catch (err) {
-    // eslint-disable-next-line no-console
-    console.error('Error loading article:', err);
+  } catch {
     // If the article is not found, show 404
     notFound();
   }
@@ -47,7 +46,7 @@ export async function generateMetadata({
   params 
 }: { 
   params: { slug: string } 
-}) {
+}): Promise<Metadata> {
   try {
     const articlesDirectory = path.join(process.cwd(), 'app/articles');
     const fullPath = path.join(articlesDirectory, params.slug, 'page.mdx');
@@ -63,10 +62,7 @@ export async function generateMetadata({
       title: title,
       description: data.description || 'Factcheck artikel op KloptDat.be'
     };
-  } catch (err) {
-    // eslint-disable-next-line no-console
-    console.error('Error generating metadata:', err);
-    
+  } catch {
     return {
       title: 'Artikel niet gevonden',
       description: 'De pagina kon niet worden geladen'
