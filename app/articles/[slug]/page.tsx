@@ -27,14 +27,16 @@ export default async function ArticlePage({
     const fileContents = fs.readFileSync(fullPath, 'utf8');
     
     // Parse the MDX file with gray-matter
-    const { content, data } = matter(fileContents);
+    const { content, data: _frontmatter } = matter(fileContents);
     
     return (
       <div>
         <MDXRemote source={content} />
       </div>
     );
-  } catch (error) {
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error('Error loading article:', err);
     // If the article is not found, show 404
     notFound();
   }
@@ -61,7 +63,10 @@ export async function generateMetadata({
       title: title,
       description: data.description || 'Factcheck artikel op KloptDat.be'
     };
-  } catch (error) {
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error('Error generating metadata:', err);
+    
     return {
       title: 'Artikel niet gevonden',
       description: 'De pagina kon niet worden geladen'
