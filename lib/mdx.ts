@@ -42,11 +42,18 @@ export function getAllArticles(): ArticleMetadata[] {
     const imageMatch = content.match(/!\[.+\]\((.+)\)/);
     const imageUrl = imageMatch ? imageMatch[1] : '/images/default.svg';
     
-    // Extract the first paragraph as excerpt
-    const excerptMatch = content.match(/## De bewering:\s*(.+?)(?=\s*##|$)/s);
-    const excerpt = excerptMatch 
-      ? excerptMatch[1].replace(/[\r\n]+/g, ' ').trim() 
-      : '';
+    // Extract the first paragraph as excerpt - modified to work without /s flag
+    const beweringSection = content.split('## De bewering:')[1];
+    const nextSectionIndex = beweringSection ? beweringSection.indexOf('##') : -1;
+    let excerpt = '';
+    
+    if (beweringSection) {
+      excerpt = nextSectionIndex > -1 
+        ? beweringSection.substring(0, nextSectionIndex) 
+        : beweringSection;
+      
+      excerpt = excerpt.replace(/[\r\n]+/g, ' ').trim();
+    }
     
     // Determine the category based on content or slug
     let category = 'politiek';
