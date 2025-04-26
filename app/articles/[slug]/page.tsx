@@ -6,12 +6,6 @@ import path from 'path';
 import matter from 'gray-matter';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 
-type PageParams = {
-  params: {
-    slug: string;
-  } | Promise<{ slug: string }>;
-}
-
 // Hardcode known valid slugs to avoid filesystem operations during build
 export async function generateStaticParams() {
   return [
@@ -22,10 +16,12 @@ export async function generateStaticParams() {
   ];
 }
 
-export default async function Page({ params }: PageParams) {
-  // Handle params whether it's a Promise or not
-  const paramsValue = params instanceof Promise ? await params : params;
-  const { slug } = paramsValue;
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ slug: string }>
+}) {
+  const { slug } = await params;
   
   try {
     const articlesDirectory = path.join(process.cwd(), 'app/articles');
@@ -49,10 +45,12 @@ export default async function Page({ params }: PageParams) {
   }
 }
 
-export async function generateMetadata({ params }: PageParams): Promise<Metadata> {
-  // Handle params whether it's a Promise or not
-  const paramsValue = params instanceof Promise ? await params : params;
-  const { slug } = paramsValue;
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>
+}): Promise<Metadata> {
+  const { slug } = await params;
   
   try {
     const articlesDirectory = path.join(process.cwd(), 'app/articles');
