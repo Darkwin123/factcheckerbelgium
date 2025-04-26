@@ -3,9 +3,17 @@ import Link from 'next/link';
 import { getAllArticles } from '@/lib/mdx';
 
 export default function Home() {
-  const allArticles = getAllArticles();
-  const featuredArticle = allArticles[0]; // First article is featured
-  const recentArticles = allArticles.slice(1, 7); // Next 6 articles
+  let allArticles = [];
+  
+  try {
+    allArticles = getAllArticles();
+  } catch (error) {
+    console.error('Error loading articles:', error);
+    // Continue with empty articles list
+  }
+  
+  const featuredArticle = allArticles.length > 0 ? allArticles[0] : null; 
+  const recentArticles = allArticles.slice(1, 7); // Next 6 articles or empty array
   
   // Group articles by category
   const categories = {
@@ -14,6 +22,20 @@ export default function Home() {
     europa: allArticles.filter(article => article.category === 'europa'),
     social: allArticles.filter(article => article.category === 'social'),
   };
+
+  // Add a fallback UI for when no articles are available
+  if (allArticles.length === 0) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center p-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">KloptDat.be</h1>
+          <p className="text-xl text-gray-600">
+            Onze artikelen worden momenteel geladen. Probeer het later opnieuw.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white">

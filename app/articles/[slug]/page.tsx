@@ -5,23 +5,23 @@ import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 import { MDXRemote } from 'next-mdx-remote/rsc';
+import { getAllArticles } from '@/lib/mdx';
 
-// Hardcode known valid slugs to avoid filesystem operations during build
+// Generate static paths based on the actual articles
 export async function generateStaticParams() {
-  return [
-    { slug: 'belastinghervorming' },
-    { slug: 'eu-migratie' },
-    { slug: 'begroting' },
-    { slug: 'chocolade' }
-  ];
+  const articles = getAllArticles();
+  return articles.map((article) => ({
+    slug: article.slug,
+  }));
 }
 
-export default async function Page({
-  params,
-}: {
-  params: Promise<{ slug: string }>
-}) {
-  const { slug } = await params;
+// Type definition for params
+type Params = {
+  slug: string;
+};
+
+export default async function Page({ params }: { params: Params }) {
+  const { slug } = params;
   
   try {
     const articlesDirectory = path.join(process.cwd(), 'app/articles');
@@ -45,12 +45,8 @@ export default async function Page({
   }
 }
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ slug: string }>
-}): Promise<Metadata> {
-  const { slug } = await params;
+export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
+  const { slug } = params;
   
   try {
     const articlesDirectory = path.join(process.cwd(), 'app/articles');
