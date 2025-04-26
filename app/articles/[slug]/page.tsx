@@ -14,8 +14,13 @@ export async function generateStaticParams() {
   }));
 }
 
-// Create a simple page that just awaits the params
-export default async function ArticlePage(props: any) {
+// Define a proper type
+type PageParams = {
+  params: Promise<{ slug: string }> | { slug: string };
+  searchParams?: Record<string, string | string[] | undefined>;
+};
+
+export default async function ArticlePage(props: PageParams) {
   // Extract and await the params if needed
   const params = props.params instanceof Promise ? await props.params : props.params;
   
@@ -41,8 +46,7 @@ export default async function ArticlePage(props: any) {
   }
 }
 
-// Similarly simplified approach for metadata
-export async function generateMetadata(props: any): Promise<Metadata> {
+export async function generateMetadata(props: PageParams): Promise<Metadata> {
   const params = props.params instanceof Promise ? await props.params : props.params;
   
   try {
