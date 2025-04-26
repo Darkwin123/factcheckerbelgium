@@ -1,9 +1,9 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { getAllArticles } from '@/lib/mdx';
+import { getAllArticles, ArticleMetadata } from '@/lib/mdx';
 
 export default function Home() {
-  let allArticles = [];
+  let allArticles: ArticleMetadata[] = [];
   
   try {
     allArticles = getAllArticles();
