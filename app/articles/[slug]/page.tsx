@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // app/articles/[slug]/page.tsx
 import { Metadata } from 'next';
 import { getAllArticles } from '@/lib/mdx';
@@ -14,25 +15,17 @@ export async function generateStaticParams() {
   }));
 }
 
-// Define a proper type
-type PageParams = {
-  params: Promise<{ slug: string }> | { slug: string };
-  searchParams?: Record<string, string | string[] | undefined>;
-};
-
-export default async function ArticlePage(props: PageParams) {
-  // Extract and await the params if needed
-  const params = props.params instanceof Promise ? await props.params : props.params;
-  
+// Use the simplest possible approach
+export default async function ArticlePage({ params }: any) {
   try {
-    // Construct the path to the MDX file
+    // We know that params will eventually contain slug
+    // Resolve it if it's a promise
+    const slug = params instanceof Promise ? (await params).slug : params.slug;
+    
     const articlesDirectory = path.join(process.cwd(), 'app/articles');
-    const fullPath = path.join(articlesDirectory, params.slug, 'page.mdx');
+    const fullPath = path.join(articlesDirectory, slug, 'page.mdx');
     
-    // Read the file contents
     const fileContents = fs.readFileSync(fullPath, 'utf8');
-    
-    // Parse the MDX file with gray-matter
     const { content } = matter(fileContents);
     
     return (
@@ -41,24 +34,23 @@ export default async function ArticlePage(props: PageParams) {
       </div>
     );
   } catch {
-    // If the article is not found, show 404
     notFound();
   }
 }
 
-export async function generateMetadata(props: PageParams): Promise<Metadata> {
-  const params = props.params instanceof Promise ? await props.params : props.params;
-  
+// Same simplified approach for metadata
+export async function generateMetadata({ params }: any): Promise<Metadata> {
   try {
+    const slug = params instanceof Promise ? (await params).slug : params.slug;
+    
     const articlesDirectory = path.join(process.cwd(), 'app/articles');
-    const fullPath = path.join(articlesDirectory, params.slug, 'page.mdx');
+    const fullPath = path.join(articlesDirectory, slug, 'page.mdx');
     
     const fileContents = fs.readFileSync(fullPath, 'utf8');
     const { data } = matter(fileContents);
     
-    // Extract title from the first line of the content
     const titleMatch = fileContents.match(/^# [""](.+)[""]/m);
-    const title = titleMatch ? titleMatch[1] : params.slug;
+    const title = titleMatch ? titleMatch[1] : slug;
     
     return {
       title: title,
