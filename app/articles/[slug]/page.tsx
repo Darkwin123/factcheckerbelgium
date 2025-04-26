@@ -6,9 +6,7 @@ import path from 'path';
 import matter from 'gray-matter';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import { getAllArticles } from '@/lib/mdx';
-import { useMDXComponents } from '@/mdx-components';
 import Image from 'next/image';
-import Link from 'next/link';
 
 // Generate static paths based on the actual articles
 export async function generateStaticParams() {
@@ -99,9 +97,6 @@ export default async function Page({
     const dateMatch = content.match(/\*\*Gepubliceerd op: (.+?)\*\*/);
     const date = dateMatch ? dateMatch[1] : new Date().toLocaleDateString('nl-BE');
     
-    // Use the components defined in mdx-components.tsx
-    const components = useMDXComponents({});
-    
     return (
       <div>
         {/* Add a header section before the main content for better styling */}
@@ -113,7 +108,7 @@ export default async function Page({
             </div>
             
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight mt-2">
-              "{title}"
+              &ldquo;{title}&rdquo;
             </h1>
             
             <div className="relative w-full h-64 md:h-80 rounded-xl overflow-hidden mt-4 mb-8">
@@ -131,7 +126,7 @@ export default async function Page({
         
         {/* Apply prose styling to the MDX content */}
         <div className="prose prose-lg prose-blue max-w-none">
-          <MDXRemote source={content} components={components} />
+          <MDXRemote source={content} />
         </div>
       </div>
     );
