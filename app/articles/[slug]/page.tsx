@@ -5,6 +5,7 @@ import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 import { MDXRemote } from 'next-mdx-remote/rsc';
+// Import the components directly instead of using the hook
 import { useMDXComponents } from '@/mdx-components';
 import { getAllArticles } from '@/lib/mdx';
 
@@ -101,6 +102,8 @@ export default function Page({
   params: { slug: string } 
 }) {
   const { slug } = params;
+  // Get the MDX components before any conditional returns
+  const mdxComponents = useMDXComponents({});
   
   try {
     const articlesDirectory = path.join(process.cwd(), 'app/articles');
@@ -114,12 +117,9 @@ export default function Page({
     const fileContents = fs.readFileSync(fullPath, 'utf8');
     const { content } = matter(fileContents);
     
-    // Don't add a custom header - the MDX component will render everything properly
-    // Let the mdx-components.tsx handle the styling for all elements
-    
     return (
       <div className="prose prose-lg prose-blue max-w-none">
-        <MDXRemote source={content} components={useMDXComponents({})} />
+        <MDXRemote source={content} components={mdxComponents} />
       </div>
     );
   } catch (error) {
