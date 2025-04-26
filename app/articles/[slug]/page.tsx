@@ -9,10 +9,21 @@ import { getAllArticles } from '@/lib/mdx';
 
 // Generate static paths based on the actual articles
 export async function generateStaticParams() {
-  const articles = getAllArticles();
-  return articles.map((article) => ({
-    slug: article.slug,
-  }));
+  try {
+    const articles = getAllArticles();
+    return articles.map((article) => ({
+      slug: article.slug,
+    }));
+  } catch (error) {
+    console.error('Error generating static params:', error);
+    // Return known article slugs as a fallback
+    return [
+      { slug: 'belastinghervorming' },
+      { slug: 'eu-migratie' },
+      { slug: 'begroting' },
+      { slug: 'chocolade' }
+    ];
+  }
 }
 
 export default async function Page({ 
