@@ -1,33 +1,32 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 // app/articles/[slug]/page.tsx
 import { Metadata } from 'next';
-import { getAllArticles } from '@/lib/mdx';
 import { notFound } from 'next/navigation';
-import { MDXRemote } from 'next-mdx-remote/rsc';
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
+import { MDXRemote } from 'next-mdx-remote/rsc';
 
-// Fix the generateStaticParams function
+// Hardcode known valid slugs to avoid filesystem operations during build
 export async function generateStaticParams() {
-  // Only return the slugs, don't try to access files here
-  const articles = getAllArticles();
-  return articles.map((article) => ({
-    slug: article.slug,
-  }));
+  return [
+    { slug: 'belastinghervorming' },
+    { slug: 'eu-migratie' },
+    { slug: 'begroting' },
+    { slug: 'chocolade' }
+  ];
 }
 
-// Simplify the page component
-export default async function ArticlePage({ params }: any) {
+export default function Page({ params }: { params: { slug: string } }) {
+  const { slug } = params;
+  
   try {
-    // Get the slug value
-    const slug = params instanceof Promise ? (await params).slug : params.slug;
-    
-    // Now use the slug to construct the path
     const articlesDirectory = path.join(process.cwd(), 'app/articles');
     const fullPath = path.join(articlesDirectory, slug, 'page.mdx');
     
-    // Read the file contents
+    if (!fs.existsSync(fullPath)) {
+      notFound();
+    }
+    
     const fileContents = fs.readFileSync(fullPath, 'utf8');
     const { content } = matter(fileContents);
     
@@ -37,28 +36,32 @@ export default async function ArticlePage({ params }: any) {
       </div>
     );
   } catch (error) {
-    console.error('Error in ArticlePage:', error);
+    console.error('Error loading article:', error);
     notFound();
   }
 }
 
-// Simplify the metadata function
-export async function generateMetadata({ params }: any): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const { slug } = params;
+  
   try {
-    const slug = params instanceof Promise ? (await params).slug : params.slug;
-    
     const articlesDirectory = path.join(process.cwd(), 'app/articles');
     const fullPath = path.join(articlesDirectory, slug, 'page.mdx');
     
-    const fileContents = fs.readFileSync(fullPath, 'utf8');
-    const { data } = matter(fileContents);
+    if (!fs.existsSync(fullPath)) {
+      return {
+        title: 'Artikel niet gevonden',
+        description: 'De pagina kon niet worden geladen'
+      };
+    }
     
+    const fileContents = fs.readFileSync(fullPath, 'utf8');
     const titleMatch = fileContents.match(/^# [""](.+)[""]/m);
     const title = titleMatch ? titleMatch[1] : slug;
     
     return {
-      title: title,
-      description: data.description || 'Factcheck artikel op KloptDat.be'
+      title,
+      description: `Factcheck: ${title}`
     };
   } catch (error) {
     console.error('Error in generateMetadata:', error);
