@@ -7,7 +7,6 @@ import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 
-// Generate static params is fine
 export async function generateStaticParams() {
   const articles = getAllArticles();
   return articles.map((article) => ({
@@ -15,13 +14,11 @@ export async function generateStaticParams() {
   }));
 }
 
-// Define the props according to Next.js 15.x App Router
-type Props = {
-  params: { slug: string };
-  searchParams: { [key: string]: string | string[] | undefined };
-}
-
-export default async function ArticlePage({ params, searchParams }: Props) {
+// Create a simple page that just awaits the params
+export default async function ArticlePage(props: any) {
+  // Extract and await the params if needed
+  const params = props.params instanceof Promise ? await props.params : props.params;
+  
   try {
     // Construct the path to the MDX file
     const articlesDirectory = path.join(process.cwd(), 'app/articles');
@@ -31,7 +28,7 @@ export default async function ArticlePage({ params, searchParams }: Props) {
     const fileContents = fs.readFileSync(fullPath, 'utf8');
     
     // Parse the MDX file with gray-matter
-    const { content, data: _frontmatter } = matter(fileContents);
+    const { content } = matter(fileContents);
     
     return (
       <div>
@@ -44,8 +41,10 @@ export default async function ArticlePage({ params, searchParams }: Props) {
   }
 }
 
-// Update metadata function with the same Props type
-export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
+// Similarly simplified approach for metadata
+export async function generateMetadata(props: any): Promise<Metadata> {
+  const params = props.params instanceof Promise ? await props.params : props.params;
+  
   try {
     const articlesDirectory = path.join(process.cwd(), 'app/articles');
     const fullPath = path.join(articlesDirectory, params.slug, 'page.mdx');
