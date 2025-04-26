@@ -5,8 +5,7 @@ import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 import { MDXRemote } from 'next-mdx-remote/rsc';
-// Import components directly, not as a hook
-import mdxComponents from '@/mdx-components';
+// Don't import components at all for now
 
 // Generate static paths based only on articles that actually exist
 export async function generateStaticParams() {
@@ -45,11 +44,6 @@ export async function generateStaticParams() {
     
     return knownArticles;
   }
-}
-
-type Props = {
-  params: Promise<{ slug: string }>
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
 export async function generateMetadata(
