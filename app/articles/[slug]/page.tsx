@@ -8,23 +8,26 @@ import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 
+// Fix the generateStaticParams function
 export async function generateStaticParams() {
+  // Only return the slugs, don't try to access files here
   const articles = getAllArticles();
   return articles.map((article) => ({
     slug: article.slug,
   }));
 }
 
-// Use the simplest possible approach
+// Simplify the page component
 export default async function ArticlePage({ params }: any) {
   try {
-    // We know that params will eventually contain slug
-    // Resolve it if it's a promise
+    // Get the slug value
     const slug = params instanceof Promise ? (await params).slug : params.slug;
     
+    // Now use the slug to construct the path
     const articlesDirectory = path.join(process.cwd(), 'app/articles');
     const fullPath = path.join(articlesDirectory, slug, 'page.mdx');
     
+    // Read the file contents
     const fileContents = fs.readFileSync(fullPath, 'utf8');
     const { content } = matter(fileContents);
     
@@ -33,12 +36,13 @@ export default async function ArticlePage({ params }: any) {
         <MDXRemote source={content} />
       </div>
     );
-  } catch {
+  } catch (error) {
+    console.error('Error in ArticlePage:', error);
     notFound();
   }
 }
 
-// Same simplified approach for metadata
+// Simplify the metadata function
 export async function generateMetadata({ params }: any): Promise<Metadata> {
   try {
     const slug = params instanceof Promise ? (await params).slug : params.slug;
@@ -56,7 +60,8 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
       title: title,
       description: data.description || 'Factcheck artikel op KloptDat.be'
     };
-  } catch {
+  } catch (error) {
+    console.error('Error in generateMetadata:', error);
     return {
       title: 'Artikel niet gevonden',
       description: 'De pagina kon niet worden geladen'
