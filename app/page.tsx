@@ -86,8 +86,10 @@ export default function Home() {
                       {featuredArticle.excerpt}
                     </p>
                   </div>
-                  <Link href={`/articles/${featuredArticle.slug}`} 
-                    className="group inline-flex items-center text-blue-600 font-semibold hover:text-blue-800 transition-colors">
+                  <Link 
+                    href={`/articles/${featuredArticle.slug}`} 
+                    className="group inline-flex items-center text-blue-600 font-semibold hover:text-blue-800 transition-colors"
+                  >
                     <span>Lees de volledige analyse</span>
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
@@ -112,6 +114,8 @@ export default function Home() {
           </div>
         )}
 
+        {/* Rest of the component remains the same... */}
+        
         {/* Category Tabs - Modern horizontal scrolling tabs */}
         <div className="mb-12 border-b border-gray-200">
           <div className="flex space-x-8 overflow-x-auto pb-1 scrollbar-hide">
@@ -161,8 +165,10 @@ export default function Home() {
                       <p className="text-gray-600 mb-4 line-clamp-3">
                         {article.excerpt}
                       </p>
-                      <Link href={`/articles/${article.slug}`} 
-                        className="text-blue-600 font-medium hover:text-blue-800 transition-colors inline-flex items-center">
+                      <Link 
+                        href={`/articles/${article.slug}`}
+                        className="text-blue-600 font-medium hover:text-blue-800 transition-colors inline-flex items-center"
+                      >
                         <span>Lees meer</span>
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
@@ -227,6 +233,7 @@ export default function Home() {
             </div>
           </div>
         </div>
+
 
         {/* Topics Section - Modern card design */}
         <div className="mb-16">
