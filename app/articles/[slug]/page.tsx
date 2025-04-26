@@ -5,9 +5,8 @@ import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 import { MDXRemote } from 'next-mdx-remote/rsc';
-// Import the components directly instead of using the hook
-import { useMDXComponents } from '@/mdx-components';
-import { getAllArticles } from '@/lib/mdx';
+// Import components directly, not as a hook
+import mdxComponents from '@/mdx-components';
 
 // Generate static paths based only on articles that actually exist
 export async function generateStaticParams() {
@@ -21,7 +20,7 @@ export async function generateStaticParams() {
           return fs.statSync(path.join(articlesDirectory, file)).isDirectory() && 
                  file !== '[slug]' && 
                  fs.existsSync(fullPath);
-        } catch (e) {
+        } catch (_) {
           return false;
         }
       });
@@ -39,7 +38,7 @@ export async function generateStaticParams() {
         if (fs.existsSync(fullPath)) {
           knownArticles.push({ slug });
         }
-      } catch (e) {
+      } catch (_) {
         // Skip if there's an error
       }
     }
@@ -54,8 +53,8 @@ type Props = {
 }
 
 export async function generateMetadata(
-  { params, searchParams }: Props,
-  parent: ResolvingMetadata
+  { params }: { params: Promise<{ slug: string }> },
+  _parent: ResolvingMetadata
 ): Promise<Metadata> {
   const { slug } = await params;
   
@@ -100,9 +99,7 @@ export async function generateMetadata(
   }
 }
 
-export default async function Page({ params, searchParams }: Props) {
-  // Get the MDX components before any conditional returns
-  const mdxComponents = useMDXComponents({});
+export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   
   try {
@@ -119,7 +116,7 @@ export default async function Page({ params, searchParams }: Props) {
     
     return (
       <div className="prose prose-lg prose-blue max-w-none">
-        <MDXRemote source={content} components={mdxComponents} />
+        <MDXRemote source={content} />
       </div>
     );
   } catch (error) {
