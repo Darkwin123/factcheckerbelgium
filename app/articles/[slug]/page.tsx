@@ -1,5 +1,5 @@
 // app/articles/[slug]/page.tsx
-import { Metadata } from 'next';
+import { Metadata, ResolvingMetadata } from 'next';
 import { notFound } from 'next/navigation';
 import fs from 'fs';
 import path from 'path';
@@ -48,12 +48,16 @@ export async function generateStaticParams() {
   }
 }
 
-export async function generateMetadata({ 
-  params 
-}: { 
-  params: { slug: string } 
-}): Promise<Metadata> {
-  const { slug } = params;
+type Props = {
+  params: Promise<{ slug: string }>
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}
+
+export async function generateMetadata(
+  { params, searchParams }: Props,
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  const { slug } = await params;
   
   try {
     const articlesDirectory = path.join(process.cwd(), 'app/articles');
@@ -96,14 +100,10 @@ export async function generateMetadata({
   }
 }
 
-export default function Page({ 
-  params 
-}: { 
-  params: { slug: string } 
-}) {
-  const { slug } = params;
+export default async function Page({ params, searchParams }: Props) {
   // Get the MDX components before any conditional returns
   const mdxComponents = useMDXComponents({});
+  const { slug } = await params;
   
   try {
     const articlesDirectory = path.join(process.cwd(), 'app/articles');
