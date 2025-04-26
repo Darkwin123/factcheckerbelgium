@@ -8,22 +8,42 @@ import { MDXRemote } from 'next-mdx-remote/rsc';
 import { getAllArticles } from '@/lib/mdx';
 import Image from 'next/image';
 
-// Generate static paths based on the actual articles
+// Generate static paths based only on articles that actually exist
 export async function generateStaticParams() {
   try {
-    const articles = getAllArticles();
-    return articles.map((article) => ({
-      slug: article.slug,
-    }));
+    const articlesDirectory = path.join(process.cwd(), 'app/articles');
+    // Only include folders that have a page.mdx file
+    const articleSlugs = fs.readdirSync(articlesDirectory)
+      .filter(file => {
+        try {
+          const fullPath = path.join(articlesDirectory, file, 'page.mdx');
+          return fs.statSync(path.join(articlesDirectory, file)).isDirectory() && 
+                 file !== '[slug]' && 
+                 fs.existsSync(fullPath);
+        } catch (e) {
+          return false;
+        }
+      });
+    
+    return articleSlugs.map(slug => ({ slug }));
   } catch (error) {
     console.error('Error generating static params:', error);
-    // Return known article slugs as a fallback
-    return [
-      { slug: 'belastinghervorming' },
-      { slug: 'eu-migratie' },
-      { slug: 'begroting' },
-      { slug: 'chocolade' }
-    ];
+    // Return only article slugs we're absolutely sure about
+    const knownArticles = [];
+    const articlesDirectory = path.join(process.cwd(), 'app/articles');
+    
+    for (const slug of ['belastinghervorming', 'eu-migratie', 'begroting', 'chocolade']) {
+      try {
+        const fullPath = path.join(articlesDirectory, slug, 'page.mdx');
+        if (fs.existsSync(fullPath)) {
+          knownArticles.push({ slug });
+        }
+      } catch (e) {
+        // Skip if there's an error
+      }
+    }
+    
+    return knownArticles;
   }
 }
 
@@ -73,7 +93,8 @@ export default async function Page({
     const fullPath = path.join(articlesDirectory, slug, 'page.mdx');
     
     if (!fs.existsSync(fullPath)) {
-      notFound();
+      console.error(`Article not found: ${slug}`);
+      return notFound();
     }
     
     const fileContents = fs.readFileSync(fullPath, 'utf8');
@@ -131,8 +152,8 @@ export default async function Page({
       </div>
     );
   } catch (error) {
-    console.error('Error loading article:', error);
-    notFound();
+    console.error(`Error loading article ${slug}:`, error);
+    return notFound();
   }
 }
 
