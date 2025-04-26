@@ -15,13 +15,12 @@ export async function generateStaticParams() {
   }));
 }
 
-// Type definition for params
-type Params = {
-  slug: string;
-};
-
-export default async function Page({ params }: { params: Params }) {
-  const { slug } = params;
+export default async function Page({ 
+  params 
+}: { 
+  params: Promise<{ slug: string }> 
+}) {
+  const { slug } = await params;
   
   try {
     const articlesDirectory = path.join(process.cwd(), 'app/articles');
@@ -45,8 +44,12 @@ export default async function Page({ params }: { params: Params }) {
   }
 }
 
-export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
-  const { slug } = params;
+export async function generateMetadata({ 
+  params 
+}: { 
+  params: Promise<{ slug: string }> 
+}): Promise<Metadata> {
+  const { slug } = await params;
   
   try {
     const articlesDirectory = path.join(process.cwd(), 'app/articles');
